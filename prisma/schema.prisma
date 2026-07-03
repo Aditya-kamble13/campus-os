@@ -19,8 +19,20 @@ model User {
   updatedAt DateTime @updatedAt
   assignments Assignment[]
 attendance  Attendance[]
+notes       Note[]
 }
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  subject   String
+  fileUrl   String
+  userId    String
+  
 
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
 enum Role {
   STUDENT
   FACULTY

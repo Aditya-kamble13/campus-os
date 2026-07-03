@@ -1,8 +1,6 @@
-
-  generator client {
+generator client {
   provider = "prisma-client-js"
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -10,34 +8,28 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String       @id @default(cuid())
+  name        String
+  email       String       @unique
+  password    String
+  role        Role
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   assignments Assignment[]
-attendance  Attendance[]
-notes       Note[]
+  attendance  Attendance[]
+  notes       Note[]
 }
+
 model Note {
   id        String   @id @default(cuid())
   title     String
   subject   String
   fileUrl   String
   userId    String
-  
-
-  user      User     @relation(fields: [userId], references: [id])
-
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
-enum Role {
-  STUDENT
-  FACULTY
-  ADMIN
-}
+
 model Assignment {
   id        String   @id @default(cuid())
   title     String
@@ -45,19 +37,31 @@ model Assignment {
   dueDate   DateTime
   status    String
   userId    String
-
-  user       User     @relation(fields: [userId], references: [id])
-
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Attendance {
-  id        String   @id @default(cuid())
-  subject   String
+  id         String   @id @default(cuid())
+  subject    String
   percentage Int
-  userId    String
-
+  userId     String
+  createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
+}
+model Timetable {
+  id          String   @id @default(cuid())
+  day         String
+  subject     String
+  facultyName String
+  room        String
+  startTime   String
+  endTime     String
+  createdAt   DateTime @default(now())
+}
 
-  createdAt DateTime @default(now())
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
 }

@@ -24,11 +24,19 @@ export default function LoginPage() {
   
     alert(data.message);
   
-    if (res.ok) {
+    if (!res.ok) return;
+    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+  
+    // Redirect based on role
+    if (data.user.role === "STUDENT") {
       window.location.href = "/dashboard";
+    } else if (data.user.role === "FACULTY") {
+      window.location.href = "/faculty-dashboard";
+    } else if (data.user.role === "ADMIN") {
+      window.location.href = "/admin-dashboard";
     }
   }
-
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">

@@ -14,6 +14,20 @@ type DashboardData = {
   overallAttendance: number;
 };
 
+type Announcement = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -25,15 +39,33 @@ export default function DashboardPage() {
     overallAttendance: 0,
   });
 
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  const [user, setUser] = useState<User>({
+    id: "",
+    name: "",
+    email: "",
+    role: "",
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       router.push("/login");
       return;
     }
-
+  
+    const storedUser = localStorage.getItem("user");
+  
+    console.log("LOCAL STORAGE USER:", storedUser);
+  
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  
     fetchDashboard();
+    fetchAnnouncements();
   }, [router]);
 
   async function fetchDashboard() {
@@ -47,8 +79,22 @@ export default function DashboardPage() {
     }
   }
 
+  async function fetchAnnouncements() {
+    try {
+      const res = await fetch("/api/announcements");
+      const data = await res.json();
+
+      setAnnouncements(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
+      <h1 className="text-5xl text-red-600 font-bold">
+  TEST DASHBOARD
+</h1>
       <Sidebar />
 
       <div className="flex-1">
@@ -56,13 +102,21 @@ export default function DashboardPage() {
 
         <main className="p-8">
           <h1 className="text-3xl font-bold">
-            Welcome, Aditya 👋
+            Welcome, {user.name || "User"} 👋
           </h1>
+          <p className="text-red-600 mt-2">
+  DEBUG: {JSON.stringify(user)}
+</p>
 
           <p className="text-gray-600 mt-2">
-            Here's what's happening today.
+            {user.email}
           </p>
 
+          <p className="text-blue-600 font-semibold mt-1">
+            Role: {user.role}
+          </p>
+
+          {/* Dashboard Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
             <div className="bg-white p-6 rounded-xl shadow">
               <h2 className="text-gray-500">Attendance</h2>
@@ -98,6 +152,42 @@ export default function DashboardPage() {
                 {dashboard.noteCount}
               </p>
             </div>
+          </div>
+
+          {/* Latest Announcements */}
+          <div className="bg-white rounded-xl shadow p-6 mt-8">
+            <h2 className="text-2xl font-bold mb-6">
+              📢 Latest Announcements
+            </h2>
+
+            {announcements.length === 0 ? (
+              <p className="text-gray-500">
+                No announcements available.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {announcements.map((announcement) => (
+                  <div
+                    key={announcement.id}
+                    className="border rounded-lg p-4 hover:bg-gray-50 transition"
+                  >
+                    <h3 className="text-lg font-bold">
+                      {announcement.title}
+                    </h3>
+
+                    <p className="text-gray-600 mt-2">
+                      {announcement.description}
+                    </p>
+
+                    <p className="text-sm text-gray-400 mt-3">
+                      {new Date(
+                        announcement.createdAt
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </main>
       </div>

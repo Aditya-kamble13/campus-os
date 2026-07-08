@@ -49,6 +49,7 @@ model Attendance {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
 }
+
 model Timetable {
   id          String   @id @default(cuid())
   day         String
@@ -60,14 +61,15 @@ model Timetable {
   createdAt   DateTime @default(now())
 }
 
-enum Role {
-  STUDENT
-  FACULTY
-  ADMIN
-}
 model Announcement {
   id          String   @id @default(cuid())
   title       String
   description String
   createdAt   DateTime @default(now())
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
 }

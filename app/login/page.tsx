@@ -21,10 +21,12 @@ export default function LoginPage() {
     });
   
     const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
   
     alert(data.message);
   
     if (!res.ok) return;
+    console.log("Saving user:", data.user);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("token", data.token);
   

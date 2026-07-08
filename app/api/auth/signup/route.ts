@@ -40,10 +40,13 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error(error);
-
+    console.error("Signup Error:", error);
+  
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        message:
+          error instanceof Error ? error.message : JSON.stringify(error),
+      },
       { status: 500 }
     );
   }

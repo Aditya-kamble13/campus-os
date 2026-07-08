@@ -1,6 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
 export default function Navbar() {
+  const [user, setUser] = useState<User>({
+    id: "",
+    name: "",
+    email: "",
+    role: "",
+  });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   function handleLogout() {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -20,12 +44,12 @@ export default function Navbar() {
         <button className="text-2xl">🔔</button>
 
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center">
-            A
+          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
           </div>
 
           <span className="font-semibold">
-            Aditya
+            {user.name || "User"}
           </span>
         </div>
 

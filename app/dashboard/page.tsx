@@ -92,9 +92,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <h1 className="text-5xl text-red-600 font-bold">
-  TEST DASHBOARD
-</h1>
+  
       <Sidebar />
 
       <div className="flex-1">
@@ -105,7 +103,7 @@ export default function DashboardPage() {
             Welcome, {user.name || "User"} 👋
           </h1>
           <p className="text-red-600 mt-2">
-  DEBUG: {JSON.stringify(user)}
+
 </p>
 
           <p className="text-gray-600 mt-2">

@@ -65,6 +65,8 @@ export default function DashboardPage() {
     }
   
     fetchDashboard();
+
+    // fetchAnnouncements();
     fetchAnnouncements();
   }, [router]);
 

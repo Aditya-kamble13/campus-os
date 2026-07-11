@@ -3,11 +3,19 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
+    console.log("1");
     const assignmentCount = await prisma.assignment.count();
+
+    console.log("2");
     const noteCount = await prisma.note.count();
+
+    console.log("3");
     const announcementCount = await prisma.announcement.count();
+
+    console.log("4");
     const timetableCount = await prisma.timetable.count();
 
+    console.log("5");
     const attendance = await prisma.attendance.findMany();
 
     let overallAttendance = 0;
@@ -26,10 +34,11 @@ export async function GET() {
       overallAttendance: Math.round(overallAttendance),
     });
   } catch (error) {
-    console.error(error);
-
+    console.error("Dashboard Error:", error);
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        error: String(error),
+      },
       { status: 500 }
     );
   }

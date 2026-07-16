@@ -64,10 +64,7 @@ export default function DashboardPage() {
       setUser(JSON.parse(storedUser));
     }
   
-    fetchDashboard();
-
-    // fetchAnnouncements();
-    fetchAnnouncements();
+   // Dashboard API temporarily disabled
   }, [router]);
 
   async function fetchDashboard() {

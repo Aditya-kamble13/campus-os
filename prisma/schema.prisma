@@ -74,3 +74,13 @@ enum Role {
   FACULTY
   ADMIN
 }
+model Placement {
+  id          String   @id @default(cuid())
+  companyName String
+  role        String
+  package     String
+  eligibility String
+  location    String
+  applyLink   String
+  createdAt   DateTime @default(now())
+}

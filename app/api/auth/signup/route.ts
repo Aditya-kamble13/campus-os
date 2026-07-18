@@ -1,12 +1,12 @@
-
 export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password, role } = await request.json();
+    const { name, email, password } = await request.json();
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -19,6 +19,15 @@ export async function POST(request: Request) {
         { message: "Email already exists" },
         { status: 400 }
       );
+    }
+
+    // Decide role automatically
+    let role: "STUDENT" | "FACULTY" | "ADMIN" = "STUDENT";
+
+    if (email === "admin@campusos.com") {
+      role = "ADMIN";
+    } else if (email.endsWith("@faculty.campusos.com")) {
+      role = "FACULTY";
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -43,11 +52,11 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Signup Error:", error);
-  
+
     return NextResponse.json(
       {
         message:
-          error instanceof Error ? error.message : JSON.stringify(error),
+          error instanceof Error ? error.message : "Something went wrong",
       },
       { status: 500 }
     );

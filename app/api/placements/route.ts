@@ -4,48 +4,54 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // =======================
-// Create Announcement
+// Create Placement
 // =======================
 export async function POST(request: Request) {
   try {
-    const { title, description, userId } = await request.json();
+    const {
+      companyName,
+      role,
+      package: salaryPackage,
+      eligibility,
+      location,
+      applyLink,
+      userId,
+    } = await request.json();
 
-    // Check user exists
     const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+      where: { id: userId },
     });
 
     if (!user) {
       return NextResponse.json(
-        {
-          message: "User not found",
-        },
+        { message: "User not found" },
         { status: 404 }
       );
     }
 
-    // Only Faculty & Admin can create announcements
     if (user.role !== "FACULTY" && user.role !== "ADMIN") {
       return NextResponse.json(
         {
-          message: "Only Faculty or Admin can create announcements.",
+          message: "Only Faculty or Admin can create placement drives.",
         },
         { status: 403 }
       );
     }
 
-    const announcement = await prisma.announcement.create({
+    const placement = await prisma.placement.create({
       data: {
-        title,
-        description,
+        companyName,
+        role,
+        package: salaryPackage,
+        eligibility,
+        location,
+        applyLink,
       },
     });
 
     return NextResponse.json({
-      message: "Announcement created successfully!",
-      announcement,
+      message: "Placement added successfully!",
+      placement,
     });
   } catch (error) {
     console.error(error);
@@ -60,17 +66,17 @@ export async function POST(request: Request) {
 }
 
 // =======================
-// Get All Announcements
+// Get Placements
 // =======================
 export async function GET() {
   try {
-    const announcements = await prisma.announcement.findMany({
+    const placements = await prisma.placement.findMany({
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json(announcements);
+    return NextResponse.json(placements);
   } catch (error) {
     console.error(error);
 
@@ -84,30 +90,31 @@ export async function GET() {
 }
 
 // =======================
-// Delete Announcement
+// Delete Placement
 // =======================
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+
     const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
         {
-          message: "Announcement ID is required",
+          message: "Placement ID is required",
         },
         { status: 400 }
       );
     }
 
-    await prisma.announcement.delete({
+    await prisma.placement.delete({
       where: {
         id,
       },
     });
 
     return NextResponse.json({
-      message: "Announcement deleted successfully!",
+      message: "Placement deleted successfully!",
     });
   } catch (error) {
     console.error(error);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Assignment = {
   id: string;
@@ -10,10 +11,24 @@ type Assignment = {
   dueDate: string;
 };
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
 export default function AssignmentsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
     fetchAssignments();
   }, []);
 
@@ -45,9 +60,20 @@ export default function AssignmentsPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">
-        Assignments
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">
+          Assignments
+        </h1>
+
+        {(user?.role === "FACULTY" || user?.role === "ADMIN") && (
+          <Link
+            href="/assignments/create"
+            className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700"
+          >
+            ➕ Create Assignment
+          </Link>
+        )}
+      </div>
 
       {assignments.length === 0 ? (
         <p>No assignments found.</p>
@@ -68,12 +94,14 @@ export default function AssignmentsPage() {
 
               <p>📌 Status: {assignment.status}</p>
 
-              <button
-                onClick={() => deleteAssignment(assignment.id)}
-                className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg"
-              >
-                🗑 Delete Assignment
-              </button>
+              {(user?.role === "FACULTY" || user?.role === "ADMIN") && (
+                <button
+                  onClick={() => deleteAssignment(assignment.id)}
+                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                >
+                  🗑 Delete Assignment
+                </button>
+              )}
             </div>
           ))}
         </div>

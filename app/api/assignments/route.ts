@@ -1,13 +1,41 @@
-
 export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Create a new assignment
+// =======================
+// Create Assignment
+// =======================
 export async function POST(request: Request) {
   try {
     const { title, subject, dueDate, status, userId } =
       await request.json();
+
+    // Check user exists
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          message: "User not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    // Only Faculty & Admin can create assignments
+    if (user.role !== "FACULTY" && user.role !== "ADMIN") {
+      return NextResponse.json(
+        {
+          message: "Only Faculty or Admin can create assignments.",
+        },
+        { status: 403 }
+      );
+    }
 
     const assignment = await prisma.assignment.create({
       data: {
@@ -27,13 +55,17 @@ export async function POST(request: Request) {
     console.error(error);
 
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        message: "Something went wrong",
+      },
       { status: 500 }
     );
   }
 }
 
-// Get all assignments
+// =======================
+// Get All Assignments
+// =======================
 export async function GET() {
   try {
     const assignments = await prisma.assignment.findMany({
@@ -47,13 +79,17 @@ export async function GET() {
     console.error(error);
 
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        message: "Something went wrong",
+      },
       { status: 500 }
     );
   }
 }
 
-// Delete assignment
+// =======================
+// Delete Assignment
+// =======================
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -61,7 +97,9 @@ export async function DELETE(request: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { message: "Assignment ID is required" },
+        {
+          message: "Assignment ID is required",
+        },
         { status: 400 }
       );
     }
@@ -79,7 +117,9 @@ export async function DELETE(request: Request) {
     console.error(error);
 
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        message: "Something went wrong",
+      },
       { status: 500 }
     );
   }
